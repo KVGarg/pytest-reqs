@@ -62,6 +62,23 @@ def test_allow_titlecase(requirements, mock_dist_titlecase, testdir, monkeypatch
     assert 'passed' in result.stdout.str()
 
 
+@pytest.mark.parametrize('requirements', [
+    'foo',
+    'Foo',
+    'foo==1.0',
+    'Foo==1.0',
+])
+def test_allow_titlecase(requirements, mock_dist_titlecase, testdir, monkeypatch):
+    testdir.makefile('.txt', requirements=requirements)
+    monkeypatch.setattr(
+        'pytest_reqs.pip_api.installed_distributions',
+        lambda: {mock_dist_titlecase.project_name: mock_dist_titlecase}
+    )
+
+    result = testdir.runpytest("--reqs")
+    assert 'passed' in result.stdout.str()
+
+
 def test_unnecessary_requirement(mock_dist, testdir, monkeypatch):
     testdir.makefile('.txt',
                      requirements='foo;python_version<"%s"' % sys.version[:3])
