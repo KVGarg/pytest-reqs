@@ -4,6 +4,7 @@ from distutils.version import LooseVersion
 from pkg_resources import get_distribution
 
 from pretend import stub
+from pip_api._installed_distributions import Distribution
 import pytest
 
 pytest_plugins = "pytester",
@@ -16,7 +17,7 @@ def test_version():
 
 @pytest.fixture
 def mock_dist():
-    return stub(project_name='foo', version='1.0')
+    return Distribution(name='foo', version='1.0')
 
 
 @pytest.mark.parametrize('requirements', [
@@ -33,7 +34,7 @@ def test_existing_requirement(requirements, mock_dist, testdir, monkeypatch):
     testdir.makefile('.txt', requirements=requirements)
     monkeypatch.setattr(
         'pytest_reqs.pip_api.installed_distributions',
-        lambda: {mock_dist.project_name: mock_dist}
+        lambda: {mock_dist.name: mock_dist}
     )
 
     result = testdir.runpytest("--reqs")
@@ -41,23 +42,23 @@ def test_existing_requirement(requirements, mock_dist, testdir, monkeypatch):
 
 
 @pytest.mark.parametrize('requirements, dist', [
-    ('foo-bar', stub(project_name='foo-bar', version='1.0')),
-    ('foo-bar==1.0', stub(project_name='foo-bar', version='1.0')),
+    ('foo-bar', stub(name='foo-bar', version='1.0')),
+    ('foo-bar==1.0', stub(name='foo-bar', version='1.0')),
     # Capitalization
-    ('Foo-bar', stub(project_name='foo-bar', version='1.0')),
-    ('foo-bar', stub(project_name='Foo-bar', version='1.0')),
+    ('Foo-bar', stub(name='foo-bar', version='1.0')),
+    ('foo-bar', stub(name='Foo-bar', version='1.0')),
     # Periods
-    ('foo.bar', stub(project_name='foo-bar', version='1.0')),
-    ('foo-bar', stub(project_name='foo.bar', version='1.0')),
+    ('foo.bar', stub(name='foo-bar', version='1.0')),
+    ('foo-bar', stub(name='foo.bar', version='1.0')),
     # Underscores
-    ('foo_bar', stub(project_name='foo-bar', version='1.0')),
-    ('foo-bar', stub(project_name='foo_bar', version='1.0')),
+    ('foo_bar', stub(name='foo-bar', version='1.0')),
+    ('foo-bar', stub(name='foo_bar', version='1.0')),
 ])
 def test_canonicalization(requirements, dist, testdir, monkeypatch):
     testdir.makefile('.txt', requirements=requirements)
     monkeypatch.setattr(
         'pytest_reqs.pip_api.installed_distributions',
-        lambda: {dist.project_name: dist}
+        lambda: {dist.name: dist}
     )
 
     result = testdir.runpytest("--reqs")
@@ -112,7 +113,7 @@ def test_wrong_version(requirements, mock_dist, testdir, monkeypatch):
     testdir.makefile('.txt', requirements=requirements)
     monkeypatch.setattr(
         'pytest_reqs.pip_api.installed_distributions',
-        lambda: {mock_dist.project_name: mock_dist}
+        lambda: {mock_dist.name: mock_dist}
     )
 
     name = requirements.split(';', 1)
@@ -133,7 +134,7 @@ def test_invalid_requirement(requirements, mock_dist, testdir, monkeypatch):
     testdir.makefile('.txt', requirements=requirements)
     monkeypatch.setattr(
         'pytest_reqs.pip_api.installed_distributions',
-        lambda: {mock_dist.project_name: mock_dist}
+        lambda: {mock_dist.name: mock_dist}
     )
 
     result = testdir.runpytest("--reqs")
@@ -201,8 +202,8 @@ def test_override_filenamepatterns(testdir, monkeypatch):
     monkeypatch.setattr(
         'pytest_reqs.pip_api.installed_distributions',
         lambda: {
-            'bar': stub(project_name='bar', version='1.0'),
-            'foo': stub(project_name='foo', version='1.0'),
+            'bar': stub(name='bar', version='1.0'),
+            'foo': stub(name='foo', version='1.0'),
         },
     )
 
@@ -220,8 +221,8 @@ def test_override_filenamepatterns_using_dynamic_config(testdir, monkeypatch):
     monkeypatch.setattr(
         'pytest_reqs.pip_api.installed_distributions',
         lambda: {
-            'bar': stub(project_name='bar', version='1.0'),
-            'foo': stub(project_name='foo', version='1.0'),
+            'bar': stub(name='bar', version='1.0'),
+            'foo': stub(name='foo', version='1.0'),
         },
     )
 
