@@ -1,10 +1,10 @@
 import sys
 
 from distutils.version import LooseVersion
+from pip_api._installed_distributions import Distribution
 from pkg_resources import get_distribution
 
 from pretend import stub
-from pip_api._installed_distributions import Distribution
 import pytest
 
 pytest_plugins = "pytester",
