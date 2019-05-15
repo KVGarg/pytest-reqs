@@ -29,6 +29,15 @@ DEFAULT_PATTERNS = [
 PIP_VCS_SCHEMES = ['ssh', 'git', 'hg', 'bzr', 'sftp', 'svn']
 
 
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers", "reqs: check requirements files against what is installed"
+    )
+    config.addinivalue_line(
+        "markers", "reqs-outdated: check requirements files for updates"
+    )
+
+
 def pytest_addoption(parser):
     group = parser.getgroup("general")
     group.addoption(
